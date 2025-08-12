@@ -1,45 +1,154 @@
+你說：
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8" />
-<title>BaseN Encoder (Pure Frontend)</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  input[type=text] { width: 100%; max-width: 300px; padding: 8px; }
-  button { padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; }
-  button:hover { background-color: #f0f0f0; }
-  .result { margin-top: 20px; color: green; word-break: break-all; }
-  .error { margin-top: 20px; color: red; }
-  .options label { display: block; margin-top: 5px; }
-  footer { margin-top: 40px; font-size: 0.9em; color: #666; }
-  footer small { display: block; margin-top: 4px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BaseN Encoder with Output Options</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0 10px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #fafafa;
+      color: #333;
+    }
+    label {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    input[type=text], textarea {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      resize: vertical;
+      font-family: monospace;
+      transition: border-color 0.3s ease;
+    }
+    input[type=text]:focus, textarea:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.3rem;
+      background-color: #007bff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 20px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      font-size: 1.2rem;
+      color: green;
+      word-break: break-word;
+      margin-bottom: 10px;
+      background: #e6ffe6;
+      border-radius: 6px;
+      padding: 10px;
+      min-height: 3em;
+    }
+    .error {
+      font-size: 1.1rem;
+      color: #d9534f;
+      word-break: break-word;
+      margin-bottom: 10px;
+    }
+    .options {
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+    .options label {
+      display: block; /* force each option on its own line */
+      margin-bottom: 10px;
+      font-weight: normal;
+      user-select: none;
+      cursor: pointer;
+    }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .btn-group button {
+      flex: 1;
+      width: auto;
+      margin-bottom: 0;
+    }
+    footer {
+      font-size: 0.9rem;
+      color: #666;
+      text-align: center;
+      margin-top: 40px;
+      line-height: 1.5;
+    }
+    footer > div{
+      margin-bottom: 4px;
+    }
+    footer small {
+      font-size: 0.8rem;
+      display: block;
+      margin-top: 10px;
+      color: #555;
+    }
+    footer a {
+      color: #007bff;
+      text-decoration: none;
+      transition: color 0.3s ease, text-decoration 0.3s ease;
+    }
+    footer a:hover,
+    footer a:focus {
+      color: #0056b3;
+      text-decoration: underline;
+      outline: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>BaseN Encoder</h1>
-  <label for="inputText">Enter string:</label>
-  <input id="inputText" type="text" /><br />
-  
+  <h1>Encoder</h1>
+  <label for="inputText">Enter string or numbers:</label>
+  <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+
   <div class="options">
-    <label><input type="checkbox" id="optLower"> Include lowercase</label>
-    <label><input type="checkbox" id="optUpper"> Include uppercase</label>
-    <label><input type="checkbox" id="optSymbol"> Include symbols</label>
+    <label><input type="checkbox" id="optLowercase" /> Add Lowercase Letters</label>
+    <label><input type="checkbox" id="optUppercase" /> Add Uppercase Letters</label>
+    <label><input type="checkbox" id="optSymbols" /> Add Symbols</label>
+    <label><input type="checkbox" id="optClear" /> Clear Options</label>
   </div>
 
-  <div>
-    <button onclick="onEncode()">Encode</button>
-    <button onclick="copyOutput()">Copy</button>
-    <button onclick="clearAll()">Clear</button>
-  </div>
+  <button onclick="onEncode()">Encode</button>
 
-  <div id="result" class="result"></div>
+  <label for="outputText">Output:</label>
+  <textarea id="result" class="result" readonly rows="4"></textarea>
   <div id="error" class="error"></div>
 
+  <div class="btn-group">
+    <button onclick="copyOutput()">Copy Output</button>
+    <button onclick="clearAll()">Clear</button>
+  </div>
+  
   <footer>
-    <div>Version 1.0.3 — last update 2025/8/12 17:10 GMT+8</div>
-    <div style="height: 8px;"></div>
+    <div>Version 1.0.4 last update 2025/8/12 17:13 GMT+8</div>
     <div>Design by Ren 2025/8/12</div>
-    <small>If you have any issues or suggestions, please click the <a href="https://github.com/YouRenLiang/YouRenLiang.github.io/issues" target="_blank" rel="noopener noreferrer">link</a>.</small>
+    <small>
+      If you have any issues or suggestions, please click the
+      <a href="https://github.com/YouRenLiang/YouRenLiang.github.io/issues" target="_blank" rel="noopener noreferrer">link</a>.
+    </small>
   </footer>
 
 <script>
