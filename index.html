@@ -1,310 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BaseN Encoder with Output Options</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0 10px;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
-      background-color: #fafafa;
-      color: #333;
-    }
-    label {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-      display: block;
-    }
-    input[type=text], textarea {
-      width: 100%;
-      padding: 14px;
-      font-size: 1.2rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-      margin-bottom: 20px;
-      resize: vertical;
-      font-family: monospace;
-      transition: border-color 0.3s ease;
-    }
-    input[type=text]:focus, textarea:focus {
-      border-color: #007bff;
-      outline: none;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      font-size: 1.3rem;
-      background-color: #007bff;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-bottom: 20px;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .result {
-      font-size: 1.2rem;
-      color: green;
-      word-break: break-word;
-      margin-bottom: 10px;
-      background: #e6ffe6;
-      border-radius: 6px;
-      padding: 10px;
-      min-height: 3em;
-    }
-    .error {
-      font-size: 1.1rem;
-      color: #d9534f;
-      word-break: break-word;
-      margin-bottom: 10px;
-    }
-    .options {
-      margin-bottom: 20px;
-      font-size: 1.1rem;
-    }
-    .options label {
-      display: block; /* force each option on its own line */
-      margin-bottom: 10px;
-      font-weight: normal;
-      user-select: none;
-      cursor: pointer;
-    }
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .btn-group button {
-      flex: 1;
-      width: auto;
-      margin-bottom: 0;
-    }
-    footer {
-      font-size: 0.9rem;
-      color: #666;
-      text-align: center;
-      margin-top: 40px;
-      line-height: 1.5;
-    }
-    footer > div{
-      margin-bottom: 4px;
-    }
-    footer small {
-      font-size: 0.8rem;
-      display: block;
-      margin-top: 10px;
-      color: #555;
-    }
-    footer a {
-      color: #007bff;
-      text-decoration: none;
-      transition: color 0.3s ease, text-decoration 0.3s ease;
-    }
-    footer a:hover,
-    footer a:focus {
-      color: #0056b3;
-      text-decoration: underline;
-      outline: none;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>BaseN Encoder (Pure Frontend)</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  input[type=text] { width: 100%; max-width: 300px; padding: 8px; }
+  button { padding: 8px 12px; margin: 4px; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; }
+  button:hover { background-color: #f0f0f0; }
+  .result { margin-top: 20px; color: green; word-break: break-all; }
+  .error { margin-top: 20px; color: red; }
+  .options label { display: block; margin-top: 5px; }
+  footer { margin-top: 40px; font-size: 0.9em; color: #666; }
+  footer small { display: block; margin-top: 4px; }
+</style>
 </head>
 <body>
-  <h1>Encoder</h1>
-  <label for="inputText">Enter string or numbers:</label>
-  <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-
+  <h1>BaseN Encoder</h1>
+  <label for="inputText">Enter string:</label>
+  <input id="inputText" type="text" /><br />
+  
   <div class="options">
-    <label><input type="checkbox" id="optLowercase" /> Add Lowercase Letters</label>
-    <label><input type="checkbox" id="optUppercase" /> Add Uppercase Letters</label>
-    <label><input type="checkbox" id="optSymbols" /> Add Symbols</label>
-    <label><input type="checkbox" id="optClear" /> Clear Options</label>
+    <label><input type="checkbox" id="optLower"> Include lowercase</label>
+    <label><input type="checkbox" id="optUpper"> Include uppercase</label>
+    <label><input type="checkbox" id="optSymbol"> Include symbols</label>
   </div>
 
-  <button onclick="onEncode()">Encode</button>
-
-  <label for="outputText">Output:</label>
-  <textarea id="result" class="result" readonly rows="4"></textarea>
-  <div id="error" class="error"></div>
-
-  <div class="btn-group">
-    <button onclick="copyOutput()">Copy Output</button>
+  <div>
+    <button onclick="onEncode()">Encode</button>
+    <button onclick="copyOutput()">Copy</button>
     <button onclick="clearAll()">Clear</button>
   </div>
-  
+
+  <div id="result" class="result"></div>
+  <div id="error" class="error"></div>
+
   <footer>
-    <div>Version 1.0.2 last update 2025/8/12 16:44 GMT+8</div>
+    <div>Version 1.0.3 — last update 2025/8/12 17:10 GMT+8</div>
+    <div style="height: 8px;"></div>
     <div>Design by Ren 2025/8/12</div>
-    <small>
-      If you have any issues or suggestions, please click the
-      <a href="https://github.com/YouRenLiang/YouRenLiang.github.io/issues" target="_blank" rel="noopener noreferrer">link</a>.
-    </small>
+    <small>If you have any issues or suggestions, please click the <a href="https://github.com/YouRenLiang/YouRenLiang.github.io/issues" target="_blank" rel="noopener noreferrer">link</a>.</small>
   </footer>
 
+<script>
+  const charSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_";
+  const d62 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+  const lowercase = "abcdefghijklmnopqrstuvwxyz";
+  const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const symbols = "!@#$%^&*()-_=+[]{};:,.<>?";
 
-  <script>
-    const inputCharSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_ 0123456789";
-
-    const digits = "0123456789";
-    const lowerLetters = "abcdefghijkmnopqrstuvwxyz";
-    const upperLetters = "AaBbCcDdEeFfGgHhiJjKkLMmNnoPpQqRrSsTtUuVvWwXxYyZz";
-    const symbols = "!@#$%^&*()-_=+[]{}|;:',.<>/?";
-
-    const lowerCheckbox = document.getElementById("optLowercase");
-    const upperCheckbox = document.getElementById("optUppercase");
-    const symbolsCheckbox = document.getElementById("optSymbols");
-    const clearCheckbox = document.getElementById("optClear");
-
-    function updateClearCheckboxState() {
-      const anyChecked = lowerCheckbox.checked || upperCheckbox.checked || symbolsCheckbox.checked;
-      clearCheckbox.disabled = !anyChecked;
-      if (!anyChecked) {
-        clearCheckbox.checked = false;
-      }
+  function baseNToInt(text, baseChars) {
+    const base = baseChars.length;
+    const map = {};
+    for (let i = 0; i < base; i++) map[baseChars[i]] = i;
+    let num = 0;
+    for (const c of text) {
+      if (!(c in map)) throw new Error(`Invalid character: ${c}`);
+      num = num * base + map[c];
     }
+    return num;
+  }
 
-    upperCheckbox.addEventListener("change", () => {
-      if (upperCheckbox.checked) {
-        lowerCheckbox.checked = true;
-        lowerCheckbox.disabled = true;
-      } else {
-        lowerCheckbox.disabled = false;
-      }
-      updateClearCheckboxState();
-    });
-
-    lowerCheckbox.addEventListener("change", () => {
-      updateClearCheckboxState();
-    });
-
-    symbolsCheckbox.addEventListener("change", () => {
-      updateClearCheckboxState();
-    });
-
-    clearCheckbox.addEventListener("change", () => {
-      if (clearCheckbox.checked) {
-        lowerCheckbox.checked = false;
-        lowerCheckbox.disabled = false;
-        upperCheckbox.checked = false;
-        symbolsCheckbox.checked = false;
-        clearCheckbox.checked = false;
-        updateClearCheckboxState();
-      }
-    });
-
-    function makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols) {
-      let set = digits;
-      if (includeUppercase) {
-        set += upperLetters;
-      } else if (includeLowercase) {
-        set += lowerLetters;
-      }
-      if (includeSymbols) set += symbols;
-      return set;
+  function intToBaseN(num, baseChars) {
+    const base = baseChars.length;
+    if (num === 0) return baseChars[0];
+    let s = "";
+    while (num > 0) {
+      s = baseChars[num % base] + s;
+      num = Math.floor(num / base);
     }
+    return s;
+  }
 
-    function baseNToInt(text, baseChars) {
-      const base = baseChars.length;
-      const charToVal = {};
-      for (let i = 0; i < base; i++) {
-        charToVal[baseChars[i]] = i;
-      }
-      let num = 0;
-      for (const c of text) {
-        if (!(c in charToVal)) {
-          throw new Error(`Invalid character: ${c}`);
-        }
-        num = num * base + charToVal[c];
-      }
-      return num;
+  function buildOutputSet() {
+    let set = "0123456789";
+    if (document.getElementById("optLower").checked) set += lowercase;
+    if (document.getElementById("optUpper").checked) set += uppercase;
+    if (document.getElementById("optSymbol").checked) set += symbols;
+    return set;
+  }
+
+  function fixOutput(output) {
+    let arr = output.split("");
+    const hasLower = /[a-z]/.test(output);
+    const hasUpper = /[A-Z]/.test(output);
+    const hasSymbol = /[!@#$%^&*()\-\_=+\[\]{};:,.<>?]/.test(output);
+
+    if (document.getElementById("optLower").checked && !hasLower) arr[0] = "a";
+    if (document.getElementById("optUpper").checked && !hasUpper) arr[1] = "B";
+    if (document.getElementById("optSymbol").checked && !hasSymbol) arr[2] = "@";
+
+    return arr.join("");
+  }
+
+  function encode(text) {
+    text = text.trim();
+    if (!text) throw new Error("Input is empty.");
+    let num = /^\d+$/.test(text) ? parseInt(text, 10) : baseNToInt(text, charSet);
+    return intToBaseN(num, buildOutputSet());
+  }
+
+  function onEncode() {
+    const resultDiv = document.getElementById("result");
+    const errorDiv = document.getElementById("error");
+    resultDiv.textContent = "";
+    errorDiv.textContent = "";
+    try {
+      let output = encode(document.getElementById("inputText").value);
+      output = fixOutput(output);
+      resultDiv.textContent = "Encoded output: " + output;
+    } catch (e) {
+      errorDiv.textContent = "Error: " + e.message;
     }
+  }
 
-    function intToBaseN(num, baseChars) {
-      const base = baseChars.length;
-      if (num === 0) return baseChars[0];
-      let s = "";
-      while (num > 0) {
-        s = baseChars[num % base] + s;
-        num = Math.floor(num / base);
-      }
-      return s;
-    }
+  function copyOutput() {
+    const text = document.getElementById("result").textContent.replace("Encoded output: ", "");
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => alert("Copied!"));
+  }
 
-    function encode(text, outputCharset) {
-      text = text.trim();
-      if (!text) throw new Error("Input is empty.");
-      let num;
-      if (/^\d+$/.test(text)) {
-        num = parseInt(text, 10);
-      } else {
-        num = baseNToInt(text, inputCharSet);
-      }
-      return intToBaseN(num, outputCharset);
-    }
-
-    function onEncode() {
-      const inputElem = document.getElementById("inputText");
-      const resultElem = document.getElementById("result");
-      const errorDiv = document.getElementById("error");
-      resultElem.value = "";
-      errorDiv.textContent = "";
-
-      const includeLowercase = lowerCheckbox.checked;
-      const includeUppercase = upperCheckbox.checked;
-      const includeSymbols = symbolsCheckbox.checked;
-
-      const outputCharset = makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols);
-
-      try {
-        const input = inputElem.value;
-        const encoded = encode(input, outputCharset);
-        resultElem.value = encoded;
-      } catch (e) {
-        errorDiv.textContent = "Error: " + e.message;
-      }
-    }
-
-    function copyOutput() {
-      const resultElem = document.getElementById("result");
-      if (!resultElem.value) return alert("Nothing to copy!");
-      resultElem.select();
-      resultElem.setSelectionRange(0, 99999);
-      try {
-        document.execCommand('copy');
-        alert("Output copied to clipboard!");
-      } catch {
-        alert("Copy failed. Please copy manually.");
-      }
-      window.getSelection().removeAllRanges();
-    }
-
-    function clearAll() {
-      document.getElementById("inputText").value = "";
-      document.getElementById("result").value = "";
-      document.getElementById("error").textContent = "";
-      lowerCheckbox.checked = false;
-      lowerCheckbox.disabled = false;
-      upperCheckbox.checked = false;
-      symbolsCheckbox.checked = false;
-      clearCheckbox.checked = false;
-      updateClearCheckboxState();
-    }
-
-    updateClearCheckboxState();
-
-    if (upperCheckbox.checked) {
-      lowerCheckbox.checked = true;
-      lowerCheckbox.disabled = true;
-    }
-  </script>
+  function clearAll() {
+    document.getElementById("inputText").value = "";
+    document.getElementById("result").textContent = "";
+    document.getElementById("error").textContent = "";
+    document.getElementById("optLower").checked = false;
+    document.getElementById("optUpper").checked = false;
+    document.getElementById("optSymbol").checked = false;
+  }
+</script>
 </body>
 </html>
