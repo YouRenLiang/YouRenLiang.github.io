@@ -2,26 +2,72 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>BaseN Encoder (Pure Frontend)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BaseN Encoder (Mobile Friendly)</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 40px; }
-    input[type=text] { width: 300px; padding: 8px; }
-    button { padding: 8px 12px; }
-    .result { margin-top: 20px; color: green; }
-    .error { margin-top: 20px; color: red; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0 10px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    label {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    input[type=text] {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.3rem;
+      background-color: #007bff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 20px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      font-size: 1.2rem;
+      color: green;
+      word-break: break-word;
+      margin-bottom: 10px;
+    }
+    .error {
+      font-size: 1.1rem;
+      color: red;
+      word-break: break-word;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>BaseN Encoder</h1>
-  <label for="inputText">Enter string:</label><br />
-  <input id="inputText" type="text" /><br />
+  <label for="inputText">Enter string:</label>
+  <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+
   <button onclick="onEncode()">Encode</button>
 
   <div id="result" class="result"></div>
   <div id="error" class="error"></div>
 
   <script>
-    // 你 Config.ini 的字元表，請照你實際內容改
     const charSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_";
     const d62 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
 
@@ -65,12 +111,14 @@
     }
 
     function onEncode() {
-      const input = document.getElementById("inputText").value;
+      const inputElem = document.getElementById("inputText");
       const resultDiv = document.getElementById("result");
       const errorDiv = document.getElementById("error");
       resultDiv.textContent = "";
       errorDiv.textContent = "";
+
       try {
+        const input = inputElem.value;
         const encoded = encode(input);
         resultDiv.textContent = "Encoded output: " + encoded;
       } catch (e) {
