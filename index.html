@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Encoder (Mobile Friendly)</title>
+  <title>BaseN Encoder with Output Options</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,21 +55,48 @@
       word-break: break-word;
       margin-bottom: 10px;
     }
+    .options {
+      margin-bottom: 20px;
+      font-size: 1.1rem;
+    }
+    .options label {
+      display: inline-block;
+      margin-right: 15px;
+      font-weight: normal;
+    }
   </style>
 </head>
 <body>
-  <h1>Encoder</h1>
-  <label for="inputText">Enter string or number:</label>
+  <h1>BaseN Encoder with Output Options</h1>
+
+  <div class="options">
+    <label><input type="checkbox" id="optUppercase" /> 加入大小寫字母</label>
+    <label><input type="checkbox" id="optSymbols" /> 加入符號</label>
+  </div>
+
+  <label for="inputText">Enter string:</label>
   <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 
-  <button onclick="onEncode()">Submit</button>
+  <button onclick="onEncode()">Encode</button>
 
   <div id="result" class="result"></div>
   <div id="error" class="error"></div>
 
   <script>
-    const charSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_ 0123456789";
-    const d62 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+    // 輸入字元集，跟之前一樣固定
+    const inputCharSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_ 0123456789";
+
+    // 輸出字元集組合函式
+    const digits = "0123456789";
+    const letters = "AaBbCcDdEeFfGgHhiJjKkLMmNnoPpQqRrSsTtUuVvWwXxYyZz";
+    const symbols = "!@#$%^&*()-_=+[]{}|;:',.<>/?";
+
+    function makeOutputCharSet(includeUppercase, includeSymbols) {
+      let set = digits;
+      if (includeUppercase) set += letters;
+      if (includeSymbols) set += symbols;
+      return set;
+    }
 
     function baseNToInt(text, baseChars) {
       const base = baseChars.length;
@@ -98,16 +125,17 @@
       return s;
     }
 
-    function encode(text) {
+    function encode(text, outputCharset) {
       text = text.trim();
       if (!text) throw new Error("Input is empty.");
       let num;
+      // 輸入用固定字元集轉換
       if (/^\d+$/.test(text)) {
         num = parseInt(text, 10);
       } else {
-        num = baseNToInt(text, charSet);
+        num = baseNToInt(text, inputCharSet);
       }
-      return intToBaseN(num, d62);
+      return intToBaseN(num, outputCharset);
     }
 
     function onEncode() {
@@ -117,9 +145,14 @@
       resultDiv.textContent = "";
       errorDiv.textContent = "";
 
+      const includeUppercase = document.getElementById("optUppercase").checked;
+      const includeSymbols = document.getElementById("optSymbols").checked;
+
+      const outputCharset = makeOutputCharSet(includeUppercase, includeSymbols);
+
       try {
         const input = inputElem.value;
-        const encoded = encode(input);
+        const encoded = encode(input, outputCharset);
         resultDiv.textContent = "Encoded output: " + encoded;
       } catch (e) {
         errorDiv.textContent = "Error: " + e.message;
