@@ -18,7 +18,7 @@
       margin-bottom: 8px;
       display: block;
     }
-    input[type=text] {
+    input[type=text], textarea {
       width: 100%;
       padding: 14px;
       font-size: 1.2rem;
@@ -26,6 +26,8 @@
       border-radius: 8px;
       box-sizing: border-box;
       margin-bottom: 20px;
+      resize: vertical;
+      font-family: monospace;
     }
     button {
       width: 100%;
@@ -69,18 +71,19 @@
 </head>
 <body>
   <h1>Encoder</h1>
-  <label for="inputText">Enter string:</label>
+  <label for="inputText">Enter string or numbers:</label>
   <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 
   <div class="options">
     <label><input type="checkbox" id="optLowercase" /> Add Lower Letters</label>
     <label><input type="checkbox" id="optUppercase" /> Add Upper Letters</label>
-    <label><input type="checkbox" id="optSymbols" /> 加入符號</label>
+    <label><input type="checkbox" id="optSymbols" /> Add Symbols</label>
   </div>
 
   <button onclick="onEncode()">Encode</button>
 
-  <div id="result" class="result"></div>
+  <label for="outputText">Output:</label>
+  <textarea id="result" class="result" readonly rows="4"></textarea>
   <div id="error" class="error"></div>
 
   <script>
@@ -158,9 +161,9 @@
 
     function onEncode() {
       const inputElem = document.getElementById("inputText");
-      const resultDiv = document.getElementById("result");
+      const resultElem = document.getElementById("result");
       const errorDiv = document.getElementById("error");
-      resultDiv.textContent = "";
+      resultElem.value = "";
       errorDiv.textContent = "";
 
       const includeLowercase = lowerCheckbox.checked;
@@ -172,7 +175,7 @@
       try {
         const input = inputElem.value;
         const encoded = encode(input, outputCharset);
-        resultDiv.textContent = "Encoded output: " + encoded;
+        resultElem.value = encoded;
       } catch (e) {
         errorDiv.textContent = "Error: " + e.message;
       }
