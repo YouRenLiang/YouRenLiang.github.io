@@ -77,6 +77,19 @@
       width: auto;
       margin-bottom: 0;
     }
+    .btn-report {
+      background-color: #28a745;
+      margin-bottom: 20px;
+    }
+    .btn-report:hover {
+      background-color: #1e7e34;
+    }
+    footer {
+      font-size: 0.9rem;
+      color: gray;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -101,6 +114,12 @@
     <button onclick="copyOutput()">Copy Output</button>
     <button onclick="clearAll()">Clear</button>
   </div>
+  
+  <button class="btn-report" onclick="window.open('https://github.com/YouRenLiang/YouRenLiang.github.io/issues', '_blank')">Report Issue on GitHub</button>
+  
+  <footer>
+    Version 1.0.0 Design by Ren 2025/8/12
+  </footer>
 
   <script>
     const inputCharSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_ 0123456789";
@@ -228,7 +247,7 @@
       const resultElem = document.getElementById("result");
       if (!resultElem.value) return alert("Nothing to copy!");
       resultElem.select();
-      resultElem.setSelectionRange(0, 99999); // For mobile
+      resultElem.setSelectionRange(0, 99999);
       try {
         document.execCommand('copy');
         alert("Output copied to clipboard!");
@@ -250,10 +269,8 @@
       updateClearCheckboxState();
     }
 
-    // 初始化時檢查一次 clearCheckbox 是否應該 disable
     updateClearCheckboxState();
 
-    // 初始化時，如果 upperCheckbox 被勾，強制 lowerCheckbox 勾選並鎖定
     if (upperCheckbox.checked) {
       lowerCheckbox.checked = true;
       lowerCheckbox.disabled = true;
