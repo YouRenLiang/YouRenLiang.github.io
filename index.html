@@ -63,19 +63,20 @@
       display: inline-block;
       margin-right: 15px;
       font-weight: normal;
+      user-select: none;
     }
   </style>
 </head>
 <body>
-  <h1>BaseN Encoder with Output Options</h1>
-
-  <div class="options">
-    <label><input type="checkbox" id="optUppercase" /> 加入大小寫字母</label>
-    <label><input type="checkbox" id="optSymbols" /> 加入符號</label>
-  </div>
-
+  <h1>Encoder</h1>
   <label for="inputText">Enter string:</label>
   <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+
+  <div class="options">
+    <label><input type="checkbox" id="optLowercase" /> Add Lower Letters</label>
+    <label><input type="checkbox" id="optUppercase" /> Add Upper Letters</label>
+    <label><input type="checkbox" id="optSymbols" /> 加入符號</label>
+  </div>
 
   <button onclick="onEncode()">Encode</button>
 
@@ -83,17 +84,35 @@
   <div id="error" class="error"></div>
 
   <script>
-    // 輸入字元集，跟之前一樣固定
+    // 固定輸入字元集
     const inputCharSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_ 0123456789";
 
-    // 輸出字元集組合函式
     const digits = "0123456789";
-    const letters = "AaBbCcDdEeFfGgHhiJjKkLMmNnoPpQqRrSsTtUuVvWwXxYyZz";
+    const lowerLetters = "abcdefghijkmnopqrstuvwxyz";
+    const upperLetters = "AaBbCcDdEeFfGgHhiJjKkLMmNnoPpQqRrSsTtUuVvWwXxYyZz";
     const symbols = "!@#$%^&*()-_=+[]{}|;:',.<>/?";
 
-    function makeOutputCharSet(includeUppercase, includeSymbols) {
+    // 當 UpperLetters 被勾選，強制 LowerLetters 勾選並且 disable 不可取消
+    const lowerCheckbox = document.getElementById("optLowercase");
+    const upperCheckbox = document.getElementById("optUppercase");
+
+    upperCheckbox.addEventListener("change", () => {
+      if (upperCheckbox.checked) {
+        lowerCheckbox.checked = true;
+        lowerCheckbox.disabled = true;
+      } else {
+        lowerCheckbox.disabled = false;
+      }
+    });
+
+    // 輸出字元集產生
+    function makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols) {
       let set = digits;
-      if (includeUppercase) set += letters;
+      if (includeUppercase) {
+        set += upperLetters;
+      } else if (includeLowercase) {
+        set += lowerLetters;
+      }
       if (includeSymbols) set += symbols;
       return set;
     }
@@ -129,7 +148,6 @@
       text = text.trim();
       if (!text) throw new Error("Input is empty.");
       let num;
-      // 輸入用固定字元集轉換
       if (/^\d+$/.test(text)) {
         num = parseInt(text, 10);
       } else {
@@ -145,10 +163,11 @@
       resultDiv.textContent = "";
       errorDiv.textContent = "";
 
-      const includeUppercase = document.getElementById("optUppercase").checked;
+      const includeLowercase = lowerCheckbox.checked;
+      const includeUppercase = upperCheckbox.checked;
       const includeSymbols = document.getElementById("optSymbols").checked;
 
-      const outputCharset = makeOutputCharSet(includeUppercase, includeSymbols);
+      const outputCharset = makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols);
 
       try {
         const input = inputElem.value;
@@ -157,6 +176,12 @@
       } catch (e) {
         errorDiv.textContent = "Error: " + e.message;
       }
+    }
+
+    // 初始判斷一次，避免頁面載入時狀態錯誤
+    if (upperCheckbox.checked) {
+      lowerCheckbox.checked = true;
+      lowerCheckbox.disabled = true;
     }
   </script>
 </body>
