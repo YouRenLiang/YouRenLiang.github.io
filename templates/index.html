@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>BaseN Encoder</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input[type=text] { width: 300px; padding: 8px; }
+        button { padding: 8px 12px; }
+        .result { margin-top: 20px; color: green; }
+        .error { margin-top: 20px; color: red; }
+    </style>
+</head>
+<body>
+    <h1>BaseN Encoder</h1>
+    <form method="post">
+        <label>Enter string:</label><br>
+        <input type="text" name="input_text" required>
+        <button type="submit">Encode</button>
+    </form>
+
+    {% if result %}
+    <div class="result">Encoded output: {{ result }}</div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error">Error: {{ error }}</div>
+    {% endif %}
+</body>
+</html>
