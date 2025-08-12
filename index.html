@@ -80,7 +80,7 @@
   </style>
 </head>
 <body>
-  <h1>BaseN Encoder</h1>
+  <h1>Encoder</h1>
   <label for="inputText">Enter string or numbers:</label>
   <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 
@@ -115,6 +115,14 @@
     const symbolsCheckbox = document.getElementById("optSymbols");
     const clearCheckbox = document.getElementById("optClear");
 
+    function updateClearCheckboxState() {
+      const anyChecked = lowerCheckbox.checked || upperCheckbox.checked || symbolsCheckbox.checked;
+      clearCheckbox.disabled = !anyChecked;
+      if (!anyChecked) {
+        clearCheckbox.checked = false;
+      }
+    }
+
     upperCheckbox.addEventListener("change", () => {
       if (upperCheckbox.checked) {
         lowerCheckbox.checked = true;
@@ -122,21 +130,15 @@
       } else {
         lowerCheckbox.disabled = false;
       }
-      if (upperCheckbox.checked || lowerCheckbox.checked || symbolsCheckbox.checked) {
-        clearCheckbox.checked = false;
-      }
+      updateClearCheckboxState();
     });
 
     lowerCheckbox.addEventListener("change", () => {
-      if (!upperCheckbox.checked && (lowerCheckbox.checked || symbolsCheckbox.checked)) {
-        clearCheckbox.checked = false;
-      }
+      updateClearCheckboxState();
     });
 
     symbolsCheckbox.addEventListener("change", () => {
-      if (symbolsCheckbox.checked || lowerCheckbox.checked || upperCheckbox.checked) {
-        clearCheckbox.checked = false;
-      }
+      updateClearCheckboxState();
     });
 
     clearCheckbox.addEventListener("change", () => {
@@ -146,6 +148,7 @@
         upperCheckbox.checked = false;
         symbolsCheckbox.checked = false;
         clearCheckbox.checked = false;
+        updateClearCheckboxState();
       }
     });
 
@@ -244,9 +247,13 @@
       upperCheckbox.checked = false;
       symbolsCheckbox.checked = false;
       clearCheckbox.checked = false;
+      updateClearCheckboxState();
     }
 
-    // On load, enforce lower checkbox disabled if upper checked
+    // 初始化時檢查一次 clearCheckbox 是否應該 disable
+    updateClearCheckboxState();
+
+    // 初始化時，如果 upperCheckbox 被勾，強制 lowerCheckbox 勾選並鎖定
     if (upperCheckbox.checked) {
       lowerCheckbox.checked = true;
       lowerCheckbox.disabled = true;
