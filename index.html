@@ -62,21 +62,31 @@
       font-size: 1.1rem;
     }
     .options label {
-      display: inline-block;
-      margin-right: 15px;
+      display: block; /* force each option on its own line */
+      margin-bottom: 10px;
       font-weight: normal;
       user-select: none;
+    }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .btn-group button {
+      flex: 1;
+      width: auto;
+      margin-bottom: 0;
     }
   </style>
 </head>
 <body>
-  <h1>Encoder</h1>
+  <h1>BaseN Encoder</h1>
   <label for="inputText">Enter string or numbers:</label>
   <input id="inputText" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
 
   <div class="options">
-    <label><input type="checkbox" id="optLowercase" /> Add Lower Letters</label>
-    <label><input type="checkbox" id="optUppercase" /> Add Upper Letters</label>
+    <label><input type="checkbox" id="optLowercase" /> Add Lowercase Letters</label>
+    <label><input type="checkbox" id="optUppercase" /> Add Uppercase Letters</label>
     <label><input type="checkbox" id="optSymbols" /> Add Symbols</label>
   </div>
 
@@ -86,8 +96,12 @@
   <textarea id="result" class="result" readonly rows="4"></textarea>
   <div id="error" class="error"></div>
 
+  <div class="btn-group">
+    <button onclick="copyOutput()">Copy Output</button>
+    <button onclick="clearAll()">Clear All</button>
+  </div>
+
   <script>
-    // 固定輸入字元集
     const inputCharSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_ 0123456789";
 
     const digits = "0123456789";
@@ -95,7 +109,6 @@
     const upperLetters = "AaBbCcDdEeFfGgHhiJjKkLMmNnoPpQqRrSsTtUuVvWwXxYyZz";
     const symbols = "!@#$%^&*()-_=+[]{}|;:',.<>/?";
 
-    // 當 UpperLetters 被勾選，強制 LowerLetters 勾選並且 disable 不可取消
     const lowerCheckbox = document.getElementById("optLowercase");
     const upperCheckbox = document.getElementById("optUppercase");
 
@@ -108,7 +121,6 @@
       }
     });
 
-    // 輸出字元集產生
     function makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols) {
       let set = digits;
       if (includeUppercase) {
@@ -181,7 +193,31 @@
       }
     }
 
-    // 初始判斷一次，避免頁面載入時狀態錯誤
+    function copyOutput() {
+      const resultElem = document.getElementById("result");
+      if (!resultElem.value) return alert("Nothing to copy!");
+      resultElem.select();
+      resultElem.setSelectionRange(0, 99999); // For mobile
+      try {
+        document.execCommand('copy');
+        alert("Output copied to clipboard!");
+      } catch {
+        alert("Copy failed. Please copy manually.");
+      }
+      window.getSelection().removeAllRanges();
+    }
+
+    function clearAll() {
+      document.getElementById("inputText").value = "";
+      document.getElementById("result").value = "";
+      document.getElementById("error").textContent = "";
+      lowerCheckbox.checked = false;
+      lowerCheckbox.disabled = false;
+      upperCheckbox.checked = false;
+      document.getElementById("optSymbols").checked = false;
+    }
+
+    // On load, enforce lower checkbox disabled if upper checked
     if (upperCheckbox.checked) {
       lowerCheckbox.checked = true;
       lowerCheckbox.disabled = true;
