@@ -1,30 +1,82 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>BaseN Encoder</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        input[type=text] { width: 300px; padding: 8px; }
-        button { padding: 8px 12px; }
-        .result { margin-top: 20px; color: green; }
-        .error { margin-top: 20px; color: red; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>BaseN Encoder (Pure Frontend)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    input[type=text] { width: 300px; padding: 8px; }
+    button { padding: 8px 12px; }
+    .result { margin-top: 20px; color: green; }
+    .error { margin-top: 20px; color: red; }
+  </style>
 </head>
 <body>
-    <h1>BaseN Encoder</h1>
-    <form method="post">
-        <label>Enter string:</label><br>
-        <input type="text" name="input_text" required>
-        <button type="submit">Encode</button>
-    </form>
+  <h1>BaseN Encoder</h1>
+  <label for="inputText">Enter string:</label><br />
+  <input id="inputText" type="text" /><br />
+  <button onclick="onEncode()">Encode</button>
 
-    {% if result %}
-    <div class="result">Encoded output: {{ result }}</div>
-    {% endif %}
+  <div id="result" class="result"></div>
+  <div id="error" class="error"></div>
 
-    {% if error %}
-    <div class="error">Error: {{ error }}</div>
-    {% endif %}
+  <script>
+    // 你 Config.ini 的字元表，請照你實際內容改
+    const charSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_";
+    const d62 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+
+    function baseNToInt(text, baseChars) {
+      const base = baseChars.length;
+      const charToVal = {};
+      for (let i = 0; i < base; i++) {
+        charToVal[baseChars[i]] = i;
+      }
+      let num = 0;
+      for (const c of text) {
+        if (!(c in charToVal)) {
+          throw new Error(`Invalid character: ${c}`);
+        }
+        num = num * base + charToVal[c];
+      }
+      return num;
+    }
+
+    function intToBaseN(num, baseChars) {
+      const base = baseChars.length;
+      if (num === 0) return baseChars[0];
+      let s = "";
+      while (num > 0) {
+        s = baseChars[num % base] + s;
+        num = Math.floor(num / base);
+      }
+      return s;
+    }
+
+    function encode(text) {
+      text = text.trim();
+      if (!text) throw new Error("Input is empty.");
+      let num;
+      if (/^\d+$/.test(text)) {
+        num = parseInt(text, 10);
+      } else {
+        num = baseNToInt(text, charSet);
+      }
+      return intToBaseN(num, d62);
+    }
+
+    function onEncode() {
+      const input = document.getElementById("inputText").value;
+      const resultDiv = document.getElementById("result");
+      const errorDiv = document.getElementById("error");
+      resultDiv.textContent = "";
+      errorDiv.textContent = "";
+      try {
+        const encoded = encode(input);
+        resultDiv.textContent = "Encoded output: " + encoded;
+      } catch (e) {
+        errorDiv.textContent = "Error: " + e.message;
+      }
+    }
+  </script>
 </body>
 </html>
