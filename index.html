@@ -88,6 +88,7 @@
     <label><input type="checkbox" id="optLowercase" /> Add Lowercase Letters</label>
     <label><input type="checkbox" id="optUppercase" /> Add Uppercase Letters</label>
     <label><input type="checkbox" id="optSymbols" /> Add Symbols</label>
+    <label><input type="checkbox" id="optClear" /> Clear Options</label>
   </div>
 
   <button onclick="onEncode()">Encode</button>
@@ -98,7 +99,7 @@
 
   <div class="btn-group">
     <button onclick="copyOutput()">Copy Output</button>
-    <button onclick="clearAll()">Clear All</button>
+    <button onclick="clearAll()">Clear</button>
   </div>
 
   <script>
@@ -111,6 +112,8 @@
 
     const lowerCheckbox = document.getElementById("optLowercase");
     const upperCheckbox = document.getElementById("optUppercase");
+    const symbolsCheckbox = document.getElementById("optSymbols");
+    const clearCheckbox = document.getElementById("optClear");
 
     upperCheckbox.addEventListener("change", () => {
       if (upperCheckbox.checked) {
@@ -118,6 +121,31 @@
         lowerCheckbox.disabled = true;
       } else {
         lowerCheckbox.disabled = false;
+      }
+      if (upperCheckbox.checked || lowerCheckbox.checked || symbolsCheckbox.checked) {
+        clearCheckbox.checked = false;
+      }
+    });
+
+    lowerCheckbox.addEventListener("change", () => {
+      if (!upperCheckbox.checked && (lowerCheckbox.checked || symbolsCheckbox.checked)) {
+        clearCheckbox.checked = false;
+      }
+    });
+
+    symbolsCheckbox.addEventListener("change", () => {
+      if (symbolsCheckbox.checked || lowerCheckbox.checked || upperCheckbox.checked) {
+        clearCheckbox.checked = false;
+      }
+    });
+
+    clearCheckbox.addEventListener("change", () => {
+      if (clearCheckbox.checked) {
+        lowerCheckbox.checked = false;
+        lowerCheckbox.disabled = false;
+        upperCheckbox.checked = false;
+        symbolsCheckbox.checked = false;
+        clearCheckbox.checked = false;
       }
     });
 
@@ -180,7 +208,7 @@
 
       const includeLowercase = lowerCheckbox.checked;
       const includeUppercase = upperCheckbox.checked;
-      const includeSymbols = document.getElementById("optSymbols").checked;
+      const includeSymbols = symbolsCheckbox.checked;
 
       const outputCharset = makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols);
 
@@ -214,7 +242,8 @@
       lowerCheckbox.checked = false;
       lowerCheckbox.disabled = false;
       upperCheckbox.checked = false;
-      document.getElementById("optSymbols").checked = false;
+      symbolsCheckbox.checked = false;
+      clearCheckbox.checked = false;
     }
 
     // On load, enforce lower checkbox disabled if upper checked
