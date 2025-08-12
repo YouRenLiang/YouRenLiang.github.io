@@ -142,7 +142,7 @@
   </div>
   
   <footer>
-    <div>Version 1.0.4 last update 2025/8/12 17:13 GMT+8</div>
+    <div>Version 1.0.2 last update 2025/8/12 16:44 GMT+8</div>
     <div>Design by Ren 2025/8/12</div>
     <small>
       If you have any issues or suggestions, please click the
@@ -150,92 +150,161 @@
     </small>
   </footer>
 
-<script>
-  const charSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_";
-  const d62 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
-  const lowercase = "abcdefghijklmnopqrstuvwxyz";
-  const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const symbols = "!@#$%^&*()-_=+[]{};:,.<>?";
 
-  function baseNToInt(text, baseChars) {
-    const base = baseChars.length;
-    const map = {};
-    for (let i = 0; i < base; i++) map[baseChars[i]] = i;
-    let num = 0;
-    for (const c of text) {
-      if (!(c in map)) throw new Error(`Invalid character: ${c}`);
-      num = num * base + map[c];
+  <script>
+    const inputCharSet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz-_ 0123456789";
+
+    const digits = "0123456789";
+    const lowerLetters = "abcdefghijkmnopqrstuvwxyz";
+    const upperLetters = "AaBbCcDdEeFfGgHhiJjKkLMmNnoPpQqRrSsTtUuVvWwXxYyZz";
+    const symbols = "!@#$%^&*()-_=+[]{}|;:',.<>/?";
+
+    const lowerCheckbox = document.getElementById("optLowercase");
+    const upperCheckbox = document.getElementById("optUppercase");
+    const symbolsCheckbox = document.getElementById("optSymbols");
+    const clearCheckbox = document.getElementById("optClear");
+
+    function updateClearCheckboxState() {
+      const anyChecked = lowerCheckbox.checked || upperCheckbox.checked || symbolsCheckbox.checked;
+      clearCheckbox.disabled = !anyChecked;
+      if (!anyChecked) {
+        clearCheckbox.checked = false;
+      }
     }
-    return num;
-  }
 
-  function intToBaseN(num, baseChars) {
-    const base = baseChars.length;
-    if (num === 0) return baseChars[0];
-    let s = "";
-    while (num > 0) {
-      s = baseChars[num % base] + s;
-      num = Math.floor(num / base);
+    upperCheckbox.addEventListener("change", () => {
+      if (upperCheckbox.checked) {
+        lowerCheckbox.checked = true;
+        lowerCheckbox.disabled = true;
+      } else {
+        lowerCheckbox.disabled = false;
+      }
+      updateClearCheckboxState();
+    });
+
+    lowerCheckbox.addEventListener("change", () => {
+      updateClearCheckboxState();
+    });
+
+    symbolsCheckbox.addEventListener("change", () => {
+      updateClearCheckboxState();
+    });
+
+    clearCheckbox.addEventListener("change", () => {
+      if (clearCheckbox.checked) {
+        lowerCheckbox.checked = false;
+        lowerCheckbox.disabled = false;
+        upperCheckbox.checked = false;
+        symbolsCheckbox.checked = false;
+        clearCheckbox.checked = false;
+        updateClearCheckboxState();
+      }
+    });
+
+    function makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols) {
+      let set = digits;
+      if (includeUppercase) {
+        set += upperLetters;
+      } else if (includeLowercase) {
+        set += lowerLetters;
+      }
+      if (includeSymbols) set += symbols;
+      return set;
     }
-    return s;
-  }
 
-  function buildOutputSet() {
-    let set = "0123456789";
-    if (document.getElementById("optLower").checked) set += lowercase;
-    if (document.getElementById("optUpper").checked) set += uppercase;
-    if (document.getElementById("optSymbol").checked) set += symbols;
-    return set;
-  }
-
-  function fixOutput(output) {
-    let arr = output.split("");
-    const hasLower = /[a-z]/.test(output);
-    const hasUpper = /[A-Z]/.test(output);
-    const hasSymbol = /[!@#$%^&*()\-\_=+\[\]{};:,.<>?]/.test(output);
-
-    if (document.getElementById("optLower").checked && !hasLower) arr[0] = "a";
-    if (document.getElementById("optUpper").checked && !hasUpper) arr[1] = "B";
-    if (document.getElementById("optSymbol").checked && !hasSymbol) arr[2] = "@";
-
-    return arr.join("");
-  }
-
-  function encode(text) {
-    text = text.trim();
-    if (!text) throw new Error("Input is empty.");
-    let num = /^\d+$/.test(text) ? parseInt(text, 10) : baseNToInt(text, charSet);
-    return intToBaseN(num, buildOutputSet());
-  }
-
-  function onEncode() {
-    const resultDiv = document.getElementById("result");
-    const errorDiv = document.getElementById("error");
-    resultDiv.textContent = "";
-    errorDiv.textContent = "";
-    try {
-      let output = encode(document.getElementById("inputText").value);
-      output = fixOutput(output);
-      resultDiv.textContent = "Encoded output: " + output;
-    } catch (e) {
-      errorDiv.textContent = "Error: " + e.message;
+    function baseNToInt(text, baseChars) {
+      const base = baseChars.length;
+      const charToVal = {};
+      for (let i = 0; i < base; i++) {
+        charToVal[baseChars[i]] = i;
+      }
+      let num = 0;
+      for (const c of text) {
+        if (!(c in charToVal)) {
+          throw new Error(`Invalid character: ${c}`);
+        }
+        num = num * base + charToVal[c];
+      }
+      return num;
     }
-  }
 
-  function copyOutput() {
-    const text = document.getElementById("result").textContent.replace("Encoded output: ", "");
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(() => alert("Copied!"));
-  }
+    function intToBaseN(num, baseChars) {
+      const base = baseChars.length;
+      if (num === 0) return baseChars[0];
+      let s = "";
+      while (num > 0) {
+        s = baseChars[num % base] + s;
+        num = Math.floor(num / base);
+      }
+      return s;
+    }
 
-  function clearAll() {
-    document.getElementById("inputText").value = "";
-    document.getElementById("result").textContent = "";
-    document.getElementById("error").textContent = "";
-    document.getElementById("optLower").checked = false;
-    document.getElementById("optUpper").checked = false;
-    document.getElementById("optSymbol").checked = false;
-  }
-</script>
+    function encode(text, outputCharset) {
+      text = text.trim();
+      if (!text) throw new Error("Input is empty.");
+      let num;
+      if (/^\d+$/.test(text)) {
+        num = parseInt(text, 10);
+      } else {
+        num = baseNToInt(text, inputCharSet);
+      }
+      return intToBaseN(num, outputCharset);
+    }
+
+    function onEncode() {
+      const inputElem = document.getElementById("inputText");
+      const resultElem = document.getElementById("result");
+      const errorDiv = document.getElementById("error");
+      resultElem.value = "";
+      errorDiv.textContent = "";
+
+      const includeLowercase = lowerCheckbox.checked;
+      const includeUppercase = upperCheckbox.checked;
+      const includeSymbols = symbolsCheckbox.checked;
+
+      const outputCharset = makeOutputCharSet(includeLowercase, includeUppercase, includeSymbols);
+
+      try {
+        const input = inputElem.value;
+        const encoded = encode(input, outputCharset);
+        resultElem.value = encoded;
+      } catch (e) {
+        errorDiv.textContent = "Error: " + e.message;
+      }
+    }
+
+    function copyOutput() {
+      const resultElem = document.getElementById("result");
+      if (!resultElem.value) return alert("Nothing to copy!");
+      resultElem.select();
+      resultElem.setSelectionRange(0, 99999);
+      try {
+        document.execCommand('copy');
+        alert("Output copied to clipboard!");
+      } catch {
+        alert("Copy failed. Please copy manually.");
+      }
+      window.getSelection().removeAllRanges();
+    }
+
+    function clearAll() {
+      document.getElementById("inputText").value = "";
+      document.getElementById("result").value = "";
+      document.getElementById("error").textContent = "";
+      lowerCheckbox.checked = false;
+      lowerCheckbox.disabled = false;
+      upperCheckbox.checked = false;
+      symbolsCheckbox.checked = false;
+      clearCheckbox.checked = false;
+      updateClearCheckboxState();
+    }
+
+    updateClearCheckboxState();
+
+    if (upperCheckbox.checked) {
+      lowerCheckbox.checked = true;
+      lowerCheckbox.disabled = true;
+    }
+  </script>
 </body>
 </html>
